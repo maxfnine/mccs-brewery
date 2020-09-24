@@ -8,6 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,12 +26,12 @@ public class CustomerController {
     }
 
     @GetMapping({"/{customerId}"})
-    public ResponseEntity<CustomerDTO> getCustomer(@PathVariable("customerId") UUID customerId){
+    public ResponseEntity<CustomerDTO> getCustomer(@NotNull @PathVariable("customerId") UUID customerId){
         return new ResponseEntity<CustomerDTO>(customerService.getCustomerById(customerId), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<CustomerDTO> handlePost(@RequestBody CustomerDTO customerDTO){
+    public ResponseEntity<CustomerDTO> handlePost(@Valid @RequestBody CustomerDTO customerDTO){
         CustomerDTO savedDto = customerService.saveNewCustomer(customerDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location","/api/v1/customer/"+savedDto.getId().toString());
@@ -33,14 +39,14 @@ public class CustomerController {
     }
 
     @PutMapping({"/{customerId}"})
-    public ResponseEntity handleUpdate(@PathVariable("customerId") UUID customerId,@RequestBody CustomerDTO customerDTO){
+    public ResponseEntity handleUpdate(@NotNull @PathVariable("customerId") UUID customerId, @Valid @RequestBody CustomerDTO customerDTO){
         customerService.updateCustomer(customerId,customerDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping({"/{customerId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable("customerId") UUID customerId){
+    public void deleteById(@NotNull @PathVariable("customerId") UUID customerId){
         customerService.deleteById(customerId);
     }
 }
